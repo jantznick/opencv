@@ -1,7 +1,7 @@
-# import the necessary packages
 import numpy as np
 import argparse
 import cv2
+import re
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -14,6 +14,12 @@ ap.add_argument("-m", "--model", required=True,
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
+
+fileNameRegex = r"[a-z]+(?=.jpeg|.jpg)"
+fileExtensionRegex = r"(.jpeg|.jpg)"
+fileName = re.search(fileNameRegex, args["image"])
+fileExtension = re.search(fileExtensionRegex, args["image"])
+fileName = f"{fileName.group()}-analyzed{fileExtension.group()}"
 
 # load our serialized model from disk
 print("[INFO] loading model...")
@@ -53,6 +59,6 @@ for i in range(0, detections.shape[2]):
 			(0, 0, 255), 2)
 		cv2.putText(image, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
-# show the output image
-cv2.imshow("Output", image)
-cv2.waitKey(0)
+
+print(f"[INFO] saving image as {fileName}...")
+cv2.imwrite(fileName, image)
