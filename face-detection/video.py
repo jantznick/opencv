@@ -33,6 +33,8 @@ print(width)
 print(height)
 
 ret, frame = cap.read()
+# use this instead:
+# frame = cv2.resize(frame, (224, 224))
 frame = imutils.resize(frame, width=400)
 
 # grab the frame dimensions and convert it to a blob
