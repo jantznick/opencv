@@ -11,7 +11,7 @@ ap.add_argument("-m", "--model", default='model.caffemodel',
 	help="path to Caffe pre-trained model")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
-ap.add_argument("-v", "--video", required=True,
+ap.add_argument("-s", "--stream", required=True,
 	help="path to input video file")
 args = vars(ap.parse_args())
 
@@ -22,7 +22,7 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # initialize the video stream and allow the camera sensor to warm up
 print("[INFO] starting video stream...")
 
-cap = cv2.VideoCapture(args["video"])
+cap = cv2.VideoCapture(args["stream"])
 
 fps = cap.get(cv2.CAP_PROP_FPS)
 width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -34,7 +34,7 @@ print(height)
 
 ret, frame = cap.read()
 # use this instead:
-# frame = cv2.resize(frame, width=400)
+# frame = cv2.resize(frame, (224, 224))
 frame = imutils.resize(frame, width=400)
 
 # grab the frame dimensions and convert it to a blob
@@ -42,13 +42,12 @@ frame = imutils.resize(frame, width=400)
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-out = cv2.VideoWriter('output.mov',fourcc, int(fps), (int(w), int(h)))
+out = cv2.VideoWriter('webcam.mov',fourcc, int(fps), (int(w), int(h)))
 
 while(cap.isOpened()):
 	ret, frame = cap.read()
 
 	frame = imutils.resize(frame, width=400)
-	# frame = cv2.resize(frame, width=400)
 
 	# grab the frame dimensions and convert it to a blob
 	(h, w) = frame.shape[:2]
@@ -82,9 +81,9 @@ while(cap.isOpened()):
 			(0, 0, 255), 2)
 		cv2.putText(frame, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+		out.write(frame)
 
-	# cv2.imshow('frame', frame)
-	out.write(frame)
+	cv2.imshow('frame', frame)
 
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
