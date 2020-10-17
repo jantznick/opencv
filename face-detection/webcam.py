@@ -88,6 +88,9 @@ while(cap.isOpened()):
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 
+# TODO:
+# Handle face detection ending and write to file with date/time as filename
+
 cap.release()
 out.release()
 cv2.destroyAllWindows()
