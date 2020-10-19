@@ -2,6 +2,7 @@ import numpy as np
 import argparse
 import cv2
 import imutils
+import pytesseract
 # import re
 
 ap = argparse.ArgumentParser()
@@ -16,7 +17,7 @@ img = cv2.resize(img, (480,620) )
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #convert to grey scale
 
 gray = cv2.bilateralFilter(gray, 13, 50, 50)
-edged = cv2.Canny(gray, 10, 150) #Perform Edge detection
+edged = cv2.Canny(gray, 40, 180) #Perform Edge detection
 
 contours, hierarchy = cv2.findContours(edged.copy(),cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 contours = sorted(contours,key=cv2.contourArea, reverse = True)[:10]
@@ -39,13 +40,29 @@ img_contour = np.zeros(img.shape)
 if screenCnt.any():
 	cv2.drawContours(img_contour, [screenCnt], -1, (0,255,0), 3)
 
-cv2.imshow('img',img)
+mask = np.zeros(gray.shape,np.uint8)
+new_image = cv2.drawContours(mask,[screenCnt],0,255,-1,)
+new_image = cv2.bitwise_and(img,img,mask=mask)
+
+# cv2.imshow('img',img)
 # cv2.waitKey(0)
 # cv2.imshow('contours', img_contours)
 # cv2.waitKey(0)
-if screenCnt.any():
-	cv2.imshow('contour', img_contour)
+# if screenCnt.any():
+# 	cv2.imshow('contour', img_contour)
 # cv2.waitKey(0)
-# cv2.imshow('edged', edged)
+# cv2.imshow('edged', new_image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+(x, y) = np.where(mask == 255)
+(topx, topy) = (np.min(x), np.min(y))
+(bottomx, bottomy) = (np.max(x), np.max(y))
+Cropped = gray[topx:bottomx+1, topy:bottomy+1]
+
+cv2.imshow('edged', Cropped)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+text = pytesseract.image_to_string(Cropped, config='--psm 11')
+print("Detected license plate Number is:",text)
