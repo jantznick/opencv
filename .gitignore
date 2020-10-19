@@ -6,9 +6,6 @@
 *.mov
 *.png
 *.PNG
-*.caffemodel
-*.prototxt.txt
-*.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
