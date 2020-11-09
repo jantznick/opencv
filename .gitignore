@@ -7,6 +7,11 @@
 *.png
 *.PNG
 
+# OpenCV config/network files
+*.cfg
+*.names
+*.weights
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
