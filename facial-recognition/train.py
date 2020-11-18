@@ -51,6 +51,6 @@ print(len(encodings))
 # dump the facial encodings + names to disk
 print("[INFO] serializing encodings...")
 data = {"encodings": knownEncodings, "names": knownNames}
-f = open(args["encodings"], "wb")
+f = open(args["encodings"], "ab")
 f.write(pickle.dumps(data))
 f.close()
